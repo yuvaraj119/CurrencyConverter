@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { PropTypes } from 'prop-types';
+import PropTypes from 'prop-types';
 import { ScrollView, StatusBar, Platform, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ListItem, Seperator } from '../components/List';

@@ -1,84 +1,106 @@
-import React, { Component } from 'react';
-import { PropTypes } from 'prop-types';
-import { StatusBar, KeyboardAvoidingView } from 'react-native';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {StatusBar, KeyboardAvoidingView} from 'react-native';
+import {connect} from 'react-redux';
 // local imports
-import { Container } from '../components/Container';
-import { Logo } from '../components/Logo';
-import { InputWithButton } from '../components/TextInput';
-import { ClearButton } from '../components/Button';
-import { LastConverted } from '../components/Text';
-import { Header } from '../components/Header';
+import {Container} from '../components/Container';
+import {Logo} from '../components/Logo';
+import {InputWithButton} from '../components/TextInput';
+import {ClearButton} from '../components/Button';
+import {LastConverted} from '../components/Text';
+import {Header} from '../components/Header';
 
 // actions
-import { swapCurrency, changeCurrencyAmount } from '../actions/currencies';
-
-const TEMP_BASE_CURRENCY = 'USD';
-const TEMP_QUOTE_CURRENCY = 'GBP';
-const TEMP_BASE_PRICE = '100';
-const TEMP_QUOTE_PRICE = '79.74';
-const TEMP_CONVERSION_RATE = 0.7974;
-const TEMP_CONVERSION_DATE = new Date();
+import {swapCurrency, changeCurrencyAmount} from '../actions/currencies';
 
 class Home extends Component {
-  static propTypes = {
-    navigation: PropTypes.object,
-    dispatch: PropTypes.func,
-  };
+    static propTypes = {
+        navigation: PropTypes.object,
+        dispatch: PropTypes.func,
+        baseCurrency: PropTypes.string,
+        quoteCurrency: PropTypes.string,
+        conversionRate: PropTypes.number,
+        isFetching: PropTypes.bool,
+        lastConvertedDate: PropTypes.object,
+        primaryColor: PropTypes.string,
+    };
 
-  handlePressBaseCurrency = () => {
-    this.props.navigation.navigate('CurrencyList', { title: 'Base Currency' });
-    console.log('Press base');
-  };
+    handlePressBaseCurrency = () => {
+        this.props.navigation.navigate('CurrencyList', {title: 'Base Currency', type: 'base'});
+    };
 
-  handlePressQuoteCurrency = () => {
-    this.props.navigation.navigate('CurrencyList', { title: 'Quote Currency' });
-    console.log('Press Quote');
-  };
+    handlePressQuoteCurrency = () => {
+        this.props.navigation.navigate('CurrencyList', {title: 'Quote Currency', type: 'quote'});
+    };
 
-  handleTextChange = (amount) => {
-    this.props.dispatch(changeCurrencyAmount(amount));
-  };
+    handleTextChange = (amount) => {
+        this.props.dispatch(changeCurrencyAmount(amount));
+    };
 
-  handleSwapCurrency = () => {
-    this.props.dispatch(swapCurrency());
-  };
+    handleSwapCurrency = () => {
+        this.props.dispatch(swapCurrency());
+    };
 
-  handleOptionPress = () => {
-    this.props.navigation.navigate('Options');
-  };
+    handleOptionPress = () => {
+        this.props.navigation.navigate('Options');
+    };
 
-  render() {
-    return (
-      <Container>
-        <StatusBar translucent={false} barStyle="light-content" />
-        <Header onPress={this.handleOptionPress} />
-        <KeyboardAvoidingView behavior="padding">
-          <Logo />
-          <InputWithButton
-            buttonText={TEMP_BASE_CURRENCY}
-            onPress={this.handlePressBaseCurrency}
-            defaultValue={TEMP_BASE_PRICE}
-            keyboardType="numeric"
-            onChangeText={this.handleTextChange}
-          />
-          <InputWithButton
-            buttonText={TEMP_QUOTE_CURRENCY}
-            onPress={this.handlePressQuoteCurrency}
-            editable={false}
-            value={TEMP_QUOTE_PRICE}
-          />
-          <LastConverted
-            base={TEMP_BASE_CURRENCY}
-            quote={TEMP_QUOTE_CURRENCY}
-            date={TEMP_CONVERSION_DATE}
-            conversionRate={TEMP_CONVERSION_RATE}
-          />
-          <ClearButton text="Reverse Currencies" onPress={this.handleSwapCurrency} />
-        </KeyboardAvoidingView>
-      </Container>
-    );
-  }
+    render() {
+
+        let quotePrice = (this.props.amount * this.props.conversionRate).toFixed(2);
+        if (this.props.isFetching) {
+            quotePrice = '...';
+        }
+
+
+        return (
+            <Container backgroundColor={this.props.primaryColor}>
+                <StatusBar backgroundColor={this.props.primaryColor} translucent={false} barStyle="light-content"/>
+                <Header onPress={this.handleOptionPress}/>
+                <KeyboardAvoidingView behavior="padding">
+                    <Logo tintColor={this.props.primaryColor}/>
+                    <InputWithButton
+                        buttonText={this.props.baseCurrency}
+                        onPress={this.handlePressBaseCurrency}
+                        defaultValue={this.props.amount.toString()}
+                        keyboardType="numeric"
+                        onChangeText={this.handleTextChange}
+                        textColor={this.props.primaryColor}
+                    />
+                    <InputWithButton
+                        buttonText={this.props.quoteCurrency}
+                        onPress={this.handlePressQuoteCurrency}
+                        editable={false}
+                        value={quotePrice}
+                        textColor={this.props.primaryColor}
+                    />
+                    <LastConverted
+                        base={this.props.baseCurrency}
+                        quote={this.props.quoteCurrency}
+                        date={this.props.lastConvertedDate}
+                        conversionRate={this.props.conversionRate}
+                    />
+                    <ClearButton text="Reverse Currencies" onPress={this.handleSwapCurrency}/>
+                </KeyboardAvoidingView>
+            </Container>
+        );
+    }
 }
 
-export default connect()(Home);
+const mapStateToProps = (state) => {
+    const baseCurrency = state.currenciesR.baseCurrency;
+    const quoteCurrency = state.currenciesR.quoteCurrency;
+    const conversionSelector = state.currenciesR.conversions[baseCurrency] || {};
+    const rates = conversionSelector.rates || {};
+    return {
+        baseCurrency,
+        quoteCurrency,
+        amount: state.currenciesR.amount,
+        conversionRate: rates[quoteCurrency] || 0,
+        isFetching: conversionSelector.isFetching,
+        lastConvertedDate: conversionSelector.date ? new Date(conversionSelector.date) : new Date(),
+        primaryColor: state.themeR.primaryColor,
+    };
+};
+
+export default connect(mapStateToProps)(Home);
