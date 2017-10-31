@@ -1,11 +1,9 @@
 import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
+import Provider from 'react-redux';
 
-// import Home from './screens/Home';
-// import CurrencyList from './screens/CurrencyList';
-// import Options from './screens/Options';
-// import Themes from './screens/Themes';
 import Navigator from './config/routes';
+import store from './config/store';
 
 EStyleSheet.build({
   $primaryBlue: '#4F6D7A',
@@ -22,4 +20,8 @@ EStyleSheet.build({
   // $outline: 1,
 });
 
-export default () => <Navigator />;
+export default () => (
+  <Provider store={store}>
+    <Navigator onNavigationStateChange={null} />
+  </Provider>
+);
