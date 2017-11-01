@@ -7,14 +7,14 @@ import {
     // changeCurrencyAmount //testing
 } from '../actions/currencies';
 
-/*const initialState = {
+const initialState = {
   baseCurrency: 'USD',
   quoteCurrency: 'GBP',
   amount: 100,
   conversions: {},
-};*/
+};
 
-const initialState = {
+/*const initialState = {
     baseCurrency: 'USD',
     quoteCurrency: 'GBP',
     amount: 100,
@@ -59,7 +59,7 @@ const initialState = {
             },
         },
     },
-};
+};*/
 
 const setConversions = (state,action) => {
     let conversion ={

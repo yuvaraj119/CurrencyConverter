@@ -17,7 +17,7 @@ class Options extends Component {
   };
 
   handlePressWebsite = () => {
-    Linking.openURL('httpd://fixer.io').catch(alert("Error Sorry!, Fixer.io can't be reached now"));
+    Linking.openURL('http://fixer.io').catch(alert("Error Sorry!, Fixer.io can't be reached now"));
   };
 
   render() {
