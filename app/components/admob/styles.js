@@ -6,6 +6,9 @@ const styles = EStyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 30 : 10,
     alignItems: 'center',
   },
+    title:{
+      color: '$primaryBlue',
+    }
 });
 
 export default styles;
