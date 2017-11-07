@@ -24,9 +24,9 @@ EStyleSheet.build({
 const App = ({ dispatch, nav }) => (
   <Navigator
     navigation={addNavigationHelpers({
-      dispatch,
-      state: nav,
-    })}
+            dispatch,
+            state: nav,
+        })}
   />
 );
 
